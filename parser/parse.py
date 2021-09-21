@@ -37,7 +37,6 @@ def get_content(html):
 
 
 def parse(title):
-    print(link + urllib.parse.quote(title))
     html = get_html(link + urllib.parse.quote(title))
     #if html.status_code == 200:
     return get_content(html)
