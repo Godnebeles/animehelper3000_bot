@@ -10,11 +10,9 @@ from urllib.request import Request, urlopen
 from bs4 import BeautifulSoup
 
 
-
-
-#search = "https://yummyanime.club/get-search-list?&word=" + title + "&page=1"
 search_link = " https://yummyanime.club/get-search-list?&word="# + urllib.parse.quote("Домекано")
 current_anime_link = "https://yummyanime.club/catalog/item/"
+
 
 HEADERS = {'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36'}
 

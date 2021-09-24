@@ -28,7 +28,7 @@ dp = Dispatcher(bot, storage=MemoryStorage())
 async def set_commands(bot: Bot):
     commands = [
         BotCommand(command="/help", description="Помощь по командам"),
-        BotCommand(command="/add", description="Название аниме")
+        BotCommand(command="/add", description=" Название аниме")
     ]
     await bot.set_my_commands(commands)
 
@@ -36,8 +36,7 @@ async def set_commands(bot: Bot):
 @dp.message_handler(commands=['start'])
 async def send_start_message(message: types.Message):
     insert_time = int(time.time())
-    await bot.send_message(message.chat.id, phrases.help_Message)
-    set_commands()
+    await bot.send_message(message.chat.id, phrases.help_Message)   
 
 
 @dp.message_handler(commands=['help', 'hel', 'he', 'h'])
