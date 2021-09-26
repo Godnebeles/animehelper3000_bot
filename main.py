@@ -45,8 +45,8 @@ async def send_help_message(message: types.Message):
 
 
 @dp.message_handler(commands=['search'])
-async def request_anime_title(message: types.Message):   
-    await requester_anime.request_anime_title(bot, message)
+async def request_anime_title(message: types.Message, state: FSMContext):   
+    await requester_anime.request_anime_title(bot, message, state)
 
 
 @dp.message_handler(state=request_anime.waiting_number_title, content_types=types.ContentTypes.TEXT)
