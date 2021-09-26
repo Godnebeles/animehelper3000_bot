@@ -17,13 +17,13 @@ import time
 # config
 import config as cfg
 
-from YummyParser.parse import *
 
 from WorkClasses.add_anime import *
 
 
 bot = Bot(cfg.TOKEN)
 dp = Dispatcher(bot, storage=MemoryStorage())
+requester_anime = request_anime()
 
 async def set_commands(bot: Bot):
     commands = [
@@ -43,14 +43,16 @@ async def send_start_message(message: types.Message):
 async def send_help_message(message: types.Message):
     await bot.send_message(message.chat.id, phrases.help_Message)
 
-@dp.message_handler(content_types=['text'])
-async def request_anime_title(message: types.Message):
-    await request_anime.request_anime_title(bot, message)
+
+@dp.message_handler(commands=['search'])
+async def request_anime_title(message: types.Message):   
+    await requester_anime.request_anime_title(bot, message)
 
 
 @dp.message_handler(state=request_anime.waiting_number_title, content_types=types.ContentTypes.TEXT)
 async def get_number_title(message: types.Message, state: FSMContext):
-    await request_anime.get_number_title(bot, message, state)
+    await requester_anime.get_number_title(bot, message, state)
+
 
 # приветствие
 @dp.message_handler(content_types=["text"])
@@ -61,8 +63,6 @@ async def send_answer_on_text(message: types.Message):
     elif any(word in str(message.text).lower() for word in phrases.phrasesBye):
         await bot.send_message(message.chat.id, f"Уже уходишь, {message.from_user.first_name}?")
         await bot.send_animation(message.chat.id, "https://i.gifer.com/VRhD.gif")
-    else:
-        await say_weather(message)
 
 
 if __name__ == '__main__':
