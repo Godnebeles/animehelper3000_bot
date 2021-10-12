@@ -11,17 +11,19 @@ class data_base_manager():
 		self.cursor.execute('CREATE TABLE IF NOT EXISTS users (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,'
 					'user_id text,'
 					'user_name text,'
-					'anime_id text,'
 					'first_name text,'
 					'last_name text)')
 		self.cursor.execute('CREATE TABLE IF NOT EXISTS anime_list (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,'
 					'anime_title text,'
 					'series_count INTEGER,'
 					'is_ongoing INTEGER)')
+		self.cursor.execute('CREATE TABLE IF NOT EXISTS anime_from_users (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,'
+					'user_id text,'
+					'anime_id text)')
 		self.conn.commit()
 
 
-	def add_anime_in_db(self, message, anime_title, series_count, is_ongoing):
+	def get_anime_id(self, anime_title, series_count, is_ongoing):
 		self.cursor.execute(f"SELECT * FROM anime_list WHERE anime_title={anime_title}")
 		self.conn.commit()
 		anime = self.cursor.fetchall()
@@ -29,24 +31,26 @@ class data_base_manager():
 			self.cursor.execute('INSERT INTO anime_list (anime_title, series_count, is_ongoing)'
 					'VALUES ( '
 					f'{anime_title}, {series_count}, {is_ongoing})')
-			self.conn.commit()
 
 		self.cursor.execute(f"SELECT * FROM anime_list WHERE anime_title={anime_title}")
-		self.conn.commit()
 		anime = self.cursor.fetchall()
-		now = int(time.time())
-		# time.localtime(now)
+		return anime[0][0]
+
+	def add_anime_in_db(self, message, anime_title, series_count, is_ongoing):
+		anime_id = self.get_anime_id(anime_title, series_count, is_ongoing)
+
 		self.cursor.execute('INSERT INTO users (user_id,'
-					'user_name,'
-					'first_name,'
-					'last_name,'
-					'anime_id)'
+					'user_name, '
+					'first_name, '
+					'last_name)'
 					'VALUES ( '
 					f'"{message.from_user.id}", '
 					f'"{message.from_user.username}", '
 					f'"{message.from_user.first_name}", '
-					f'"{message.from_user.last_name}", '
-					f'{anime[0][0]})')
+					f'"{message.from_user.last_name}")')
+
+		self.cursor.execute('INSERT INTO anime_from_users (user_id, anime_id)'
+							f'VALUES ("{message.from_user.id}", "{anime_id}")')
 		self.conn.commit()
 
 
@@ -55,7 +59,6 @@ class data_base_manager():
 		self.cursor.execute(query)
 		self.conn.commit()
 		return self.cursor.fetchall()
-
 
 	def update_user(self, message, user, anime_title, series_count):
 		now = int(time.time())

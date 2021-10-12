@@ -26,8 +26,9 @@ class request_anime(StatesGroup):
 	waiting_title = State()
 	waiting_number_title = State()
 	anime_titles = []
-	found_anime = {}
+	
 	def __init__(self):
+		self.found_anime = {}
 		self.obj_parser = yummy_parser()
 
 
@@ -59,9 +60,9 @@ class request_anime(StatesGroup):
 			number = int(message.text)
 			curr_anime = request_anime.anime_titles[number-1]
 			curr_anime_title = f'"{curr_anime["name"]}"'
-			request_anime.found_anime = request_anime.anime_titles[number-1]
+			self.found_anime = request_anime.anime_titles[number-1]
 			await bot.send_message(message.chat.id, f"Отлично, будем отслеживать:\n{curr_anime_title}")
-			db.data_base_updater(message, curr_anime_title, self.obj_parser.anime_parse(request_anime.found_anime["alias"]),
+			db.data_base_updater(message, curr_anime_title, self.obj_parser.anime_parse(self.found_anime["alias"]),
 								curr_anime["ongoing"])
 			await state.finish()
 		except Exception:
