@@ -1,5 +1,5 @@
 from flask import Flask, request
-from anime_parsers.yummy_parser import *
+from source_parsers.yummy_parser import *
 
 
 app = Flask(__name__)
@@ -41,17 +41,24 @@ data = json.loads(json_string)
 
 json_string = """
 
-    {
-        "title": "Ford Prefect",
-        "series_count": "Betelgeusian",
-        "relatives": 
+{
+    [
+        finished: 
         [
             {
-                "name": "Zaphod Beeblebrox",
-                "species": "Betelgeusian"
+                "title": "Наруто ураганные додики",
+                "series": "600"
             }
+        ],
+        still coming out: 
+        [
+            {
+                "title": "Боруто наркоман",
+                "series": "100"
+            }             
         ]
-    }
+    ]       
+}
 
 """
 

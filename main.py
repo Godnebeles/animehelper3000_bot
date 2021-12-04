@@ -18,7 +18,7 @@ import time
 from .source import config as cfg
 
 
-from WorkClasses.add_anime import *
+from .source.work_classes.add_anime import *
 
 
 bot = Bot(cfg.TOKEN)
