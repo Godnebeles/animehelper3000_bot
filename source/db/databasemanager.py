@@ -1,11 +1,15 @@
 import time
 import sqlite3
 
+def test()
+	return "is working"
+
 class data_base_manager():
 	def __init__(self):
 		self.conn = sqlite3.connect("database.db")
 		self.cursor = self.conn.cursor()
 		self.create_data_base()
+
 
 	def create_data_base(self):		
 		self.cursor.execute('CREATE TABLE IF NOT EXISTS users (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,'
@@ -36,6 +40,7 @@ class data_base_manager():
 		anime = self.cursor.fetchall()
 		return anime[0][0]
 
+
 	def add_anime_in_db(self, message, anime_title, series_count, is_ongoing):
 		anime_id = self.get_anime_id(anime_title, series_count, is_ongoing)
 
@@ -59,6 +64,7 @@ class data_base_manager():
 		self.cursor.execute(query)
 		self.conn.commit()
 		return self.cursor.fetchall()
+
 
 	def update_user(self, message, user, anime_title, series_count):
 		now = int(time.time())

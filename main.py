@@ -11,11 +11,11 @@ from aiogram.utils import executor
 import sqlite3
 import threading
 #import databasemanager as db
-import phrases
+from .source import phrases
 # time
 import time
 # config
-import config as cfg
+from .source import config as cfg
 
 
 from WorkClasses.add_anime import *

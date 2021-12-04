@@ -41,11 +41,11 @@ class request_anime(StatesGroup):
 			anime_list_not_ongoing = ""
 			for anime in request_anime.anime_titles:
 				if int(anime["ongoing"]) == 1:
-					anime_list_ongoing += str(i)+') '+anime['name'] + '\n'
+					anime_list_ongoing += str(i)+') '+anime['name'] + '<br>'
 				else:
-					anime_list_not_ongoing += str(i)+') '+anime['name'] + '\n'
+					anime_list_not_ongoing += str(i)+') '+anime['name'] + '<br>'
 				i+=1
-			anime_list_string = "Уже вышли:\n" + anime_list_not_ongoing + "Ещё выходят:\n" + anime_list_ongoing
+			anime_list_string = "Уже вышли:<br>" + anime_list_not_ongoing + "Ещё выходят:<br>" + anime_list_ongoing
 			await bot.send_message(message.chat.id, anime_list_string)
 			await bot.send_message(message.chat.id, "введите номер аниме")
 			await request_anime.waiting_number_title.set()
