@@ -11,26 +11,23 @@ from aiogram.utils import executor
 import sqlite3
 import threading
 #import databasemanager as db
-from .source import phrases
+import phrases
 # time
 import time
 # config
-from .source import config as cfg
+import config as cfg
 
-
-from .source.work_classes.add_anime import *
+from work_classes.add_anime import *
 
 
 bot = Bot(cfg.TOKEN)
 dp = Dispatcher(bot, storage=MemoryStorage())
-requester_anime = request_anime()
+requester_anime = RequestAnime()
 
-async def set_commands(bot: Bot):
-    commands = [
-        BotCommand(command="/help", description="Помощь по командам"),
-        BotCommand(command="/add", description=" Название аниме")
-    ]
-    await bot.set_my_commands(commands)
+
+class RequestAnimeStates(StatesGroup):
+    waiting_title = State()
+    waiting_number_title = State()
 
 
 @dp.message_handler(commands=['start'])
@@ -45,12 +42,24 @@ async def send_help_message(message: types.Message):
 
 
 @dp.message_handler(commands=['search'])
-async def request_anime_title(message: types.Message, state: FSMContext):   
-    await requester_anime.request_anime_title(bot, message, state)
+async def request_anime_title(message: types.Message):   
+    anime_titles = await requester_anime.request_anime_title(bot, message)
+    anime_titles_string = "Finished:"
+    for anime in anime_titles["not_ongoing"]:
+        anime_titles_string += "\n" + anime
+
+    anime_titles_string += "\n\nContinue:"
+    for anime in anime_titles["ongoing"]:
+        anime_titles_string += "\n" + anime
+
+    await bot.send_message(message.chat.id, anime_titles_string)
+
+    await RequestAnimeStates.waiting_number_title.set()
 
 
-@dp.message_handler(state=request_anime.waiting_number_title, content_types=types.ContentTypes.TEXT)
+@dp.message_handler(state=RequestAnimeStates.waiting_number_title, content_types=types.ContentTypes.TEXT)
 async def get_number_title(message: types.Message, state: FSMContext):
+    await bot.send_message(message.chat.id, "введите номер аниме")
     await requester_anime.get_number_title(bot, message, state)
 
 

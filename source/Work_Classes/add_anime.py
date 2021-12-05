@@ -9,8 +9,8 @@ from aiogram.types import ParseMode
 from aiogram.utils import executor
 from aiogram.dispatcher.filters.state import State, StatesGroup
 
-from YummyParser.parse import *
-import databasemanager as database
+from parser_api.source_parsers.yummy_parser import *
+import db.databasemanager as database
 
 db = database.data_base_manager()
 
@@ -22,45 +22,40 @@ class scheduller_anime_updater():
 		pass
 
 
-class request_anime(StatesGroup):
-	waiting_title = State()
-	waiting_number_title = State()
+class RequestAnime(StatesGroup):
 	anime_titles = []
 	
 	def __init__(self):
 		self.found_anime = {}
-		self.obj_parser = yummy_parser()
+		self.obj_parser = YummyParser()
 
 
-	async def request_anime_title(self, bot, message, state):
+	async def request_anime_title(self, bot, message):
 		try:	
 			title = message.text.split(sep=" ", maxsplit = 1)
-			request_anime.anime_titles = self.obj_parser.parse(title[1])
+			RequestAnime.anime_titles = self.obj_parser.parse(title[1])
 			i = 1
-			anime_list_ongoing = ""
-			anime_list_not_ongoing = ""
-			for anime in request_anime.anime_titles:
+			anime_list_ongoing = []
+			anime_list_not_ongoing = []
+			for anime in RequestAnime.anime_titles:
 				if int(anime["ongoing"]) == 1:
-					anime_list_ongoing += str(i)+') '+anime['name'] + '<br>'
+					anime_list_ongoing.append(anime['name'])
 				else:
-					anime_list_not_ongoing += str(i)+') '+anime['name'] + '<br>'
+					anime_list_not_ongoing.append(anime['name'])
 				i+=1
-			anime_list_string = "Уже вышли:<br>" + anime_list_not_ongoing + "Ещё выходят:<br>" + anime_list_ongoing
-			await bot.send_message(message.chat.id, anime_list_string)
-			await bot.send_message(message.chat.id, "введите номер аниме")
-			await request_anime.waiting_number_title.set()
+			
+			anime_list = {"ongoing": anime_list_ongoing, "not_ongoing" : anime_list_not_ongoing}
+			return anime_list
 		except Exception:
 			await bot.send_message(message.chat.id, f"Неправильное название")
-			await state.finish()
-
-		
+	
    
 	async def get_number_title(self, bot, message, state):
 		try:
 			number = int(message.text)
-			curr_anime = request_anime.anime_titles[number-1]
+			curr_anime = RequestAnime.anime_titles[number-1]
 			curr_anime_title = f'"{curr_anime["name"]}"'
-			self.found_anime = request_anime.anime_titles[number-1]
+			self.found_anime = RequestAnime.anime_titles[number-1]
 			await bot.send_message(message.chat.id, f"Отлично, будем отслеживать:\n{curr_anime_title}")
 			db.data_base_updater(message, curr_anime_title, self.obj_parser.anime_parse(self.found_anime["alias"]),
 								curr_anime["ongoing"])

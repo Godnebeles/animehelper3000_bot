@@ -1,7 +1,7 @@
 import time
 import sqlite3
 
-def test()
+def test():
 	return "is working"
 
 class data_base_manager():
